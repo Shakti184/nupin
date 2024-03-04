@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "623749823533",
+    "project_id": "nupium-academy-app",
+    "storage_bucket": "nupium-academy-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:623749823533:android:b8a62ecd41c6be0dc14ca4",
+        "android_client_info": {
+          "package_name": "com.example.nupium"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCZsbAXtEUC4Xg7jqrE32k6T2ztZ6XvQ2o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
