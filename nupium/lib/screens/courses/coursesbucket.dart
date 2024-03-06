@@ -1,31 +1,56 @@
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
+import '../../components/models/program_course.dart'; // Assuming you have a Course model defined
 
 class CoursesBucketPage extends StatefulWidget {
   const CoursesBucketPage({Key? key}) : super(key: key);
 
   @override
-  _CoursesBucketPageState createState() => _CoursesBucketPageState();
+  State<CoursesBucketPage> createState() => _CoursesBucketPageState();
 }
 
 class _CoursesBucketPageState extends State<CoursesBucketPage> {
-  String? _selectedProgram;
-  final List<String> _programs = ['Program A', 'Program B', 'Program C']; // Example list of programs
-  final Map<String, List<Course>> _courses = {
-    'Program A': [
-      Course(name: 'Course 1', startDate: '01/01/2023', endDate: '31/01/2023', details: 'Course 1 details'),
-      Course(name: 'Course 2', startDate: '01/02/2023', endDate: '28/02/2023', details: 'Course 2 details'),
-    ],
-    'Program B': [
-      Course(name: 'Course 3', startDate: '01/03/2023', endDate: '31/03/2023', details: 'Course 3 details'),
-      Course(name: 'Course 4', startDate: '01/04/2023', endDate: '30/04/2023', details: 'Course 4 details'),
-    ],
-    'Program C': [
-      Course(name: 'Course 5', startDate: '01/05/2023', endDate: '31/05/2023', details: 'Course 5 details'),
-      Course(name: 'Course 6', startDate: '01/06/2023', endDate: '30/06/2023', details: 'Course 6 details'),
-    ],
-  };
+  Course? _selectedCourse;
+  List<Course> _courses = [];
+  bool _isLoading = false;
 
-  String? _selectedCourse;
+  @override
+  void initState() {
+    super.initState();
+    fetchCourses();
+  }
+
+  Future<void> fetchCourses() async {
+  if (!mounted) return; // Check if the widget is still mounted
+
+  setState(() {
+    _isLoading = true;
+  });
+  
+  try {
+    final dio = Dio();
+    final response = await dio.get('http://192.168.1.35:3000/api/courses');
+
+    if (!mounted) return; // Check if the widget is still mounted before updating the state
+
+    if (response.statusCode == 200) {
+      setState(() {
+        _courses = (response.data as List)
+            .map((courseJson) => Course.fromJson(courseJson))
+            .toList();
+        _isLoading = false;
+      });
+    } else {
+      throw Exception('Failed to fetch courses');
+    }
+  } catch (error) {
+    print('Error fetching courses: $error');
+    setState(() {
+      _isLoading = false;
+    });
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -38,77 +63,44 @@ class _CoursesBucketPageState extends State<CoursesBucketPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            DropdownButtonFormField<String>(
-              value: _selectedProgram,
-              hint: const Text('Select Program'),
-              onChanged: (newValue) {
-                setState(() {
-                  _selectedProgram = newValue;
-                  _selectedCourse = null; // Reset selected course when program changes
-                });
-              },
-              items: _programs.map((program) {
-                return DropdownMenuItem<String>(
-                  value: program,
-                  child: Text(program),
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 16.0),
-            if (_selectedProgram != null)
+            if (_isLoading)
+              const Center(child: CircularProgressIndicator())
+            else
               DropdownButtonFormField<Course>(
-                value: null,
+                value: _selectedCourse,
                 hint: const Text('Select Course'),
                 onChanged: (newValue) {
                   setState(() {
-                    _selectedCourse = newValue?.name;
+                    _selectedCourse = newValue;
                   });
                 },
-                items: _courses[_selectedProgram!]!.map((course) {
+                items: _courses.map((course) {
                   return DropdownMenuItem<Course>(
                     value: course,
                     child: Text(course.name),
                   );
                 }).toList(),
               ),
-            const SizedBox(height: 16.0),
-            if (_selectedCourse != null)
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: DataTable(
-                  columns: const [
-                    DataColumn(label: Text('Course')),
-                    DataColumn(label: Text('Start Date')),
-                    DataColumn(label: Text('End Date')),
-                    DataColumn(label: Text('Details')),
-                  ],
-                  rows: _courses[_selectedProgram!]!
-                      .map((course) => DataRow(cells: [
-                            DataCell(Text(course.name)),
-                            DataCell(Text(course.startDate)),
-                            DataCell(Text(course.endDate)),
-                            DataCell(Text(course.details)),
-                          ]))
-                      .toList(),
-                ),
+            if (_selectedCourse != null) ...[
+              const SizedBox(height: 16.0),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    'Course Details',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 8.0),
+                  Text('Name: ${_selectedCourse!.name}'),
+                  Text('Description: ${_selectedCourse!.description}'),
+                  Text('Price: \$${_selectedCourse!.price}'),
+                  // Add more details as needed
+                ],
               ),
+            ],
           ],
         ),
       ),
     );
   }
-}
-
-class Course {
-  final String name;
-  final String startDate;
-  final String endDate;
-  final String details;
-
-  Course({
-    required this.name,
-    required this.startDate,
-    required this.endDate,
-    required this.details,
-  });
 }

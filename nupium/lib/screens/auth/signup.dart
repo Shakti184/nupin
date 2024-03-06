@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:nupium/screens/candidate/userdetails.dart';
 
 import '../../components/helper.dart';
 import '../../components/rounded_input_field.dart';
@@ -19,6 +20,7 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _userEmailController = TextEditingController();
   bool _showPassword = false;
+  String userId="";
 
   @override
   Widget build(BuildContext context) {
@@ -171,21 +173,17 @@ class _SignUpPageState extends State<SignUpPage> {
         email: email,
         password: password,
       );
-
+      userId = userCredential.user!.uid;
       // Update user's display name
       await userCredential.user?.updateDisplayName(username);
 
       // Navigate to HomePage after successful sign-up
-      _navigateToHomePage();
+      Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => UserDetailsPage(userId: userId)),
+      (route) => false,
+    );
     } on FirebaseAuthException catch (e) {
       Helper.customAlertBox(context, e.code.toString());
     }
-  }
-
-  void _navigateToHomePage() {
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (context) => const HomePage()),
-      (route) => false,
-    );
   }
 }

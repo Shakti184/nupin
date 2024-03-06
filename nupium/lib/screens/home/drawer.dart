@@ -32,7 +32,7 @@ class _DrawerPageState extends State<DrawerPage> {
         children: [
           DrawerHeader(
             decoration: const BoxDecoration(
-              color: Colors.redAccent,
+              color: Color.fromARGB(255, 171, 185, 255),
             ),
             child: Center(
               child: Column(

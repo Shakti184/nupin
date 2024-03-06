@@ -60,6 +60,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 50,
+        toolbarHeight: 80,
         title: const Text('Welcome Shakti to Dashboard'),
         actions: [
           IconButton(
@@ -103,12 +105,12 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
             label: 'Dashboard',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.quiz),
-            label: 'Quiz',
+            icon: Icon(Icons.book),
+            label: 'Courses',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.content_paste),
-            label: 'Content',
+            icon: Icon(Icons.person_2),
+            label: 'My Account',
           ),
         ],
         onTap: (index) {

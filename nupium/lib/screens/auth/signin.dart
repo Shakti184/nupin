@@ -1,6 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../components/rounded_input_field.dart';
+import '../home/homepage.dart';
 import 'forgotpassword.dart';
 import 'signup.dart';
 
@@ -13,7 +15,7 @@ class SignInPage extends StatefulWidget {
 
 class _SignInPageState extends State<SignInPage> {
   
-  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 bool _showPassword = false;
   @override
@@ -48,7 +50,7 @@ bool _showPassword = false;
                     labelText: 'Email',
                     obscureText: false,
                     borderRadius: 40.0,
-                    controller: _usernameController,
+                    controller: _emailController,
                   ),
                   const SizedBox(height: 16.0),
                   RoundedInputField(
@@ -84,7 +86,7 @@ bool _showPassword = false;
                       
                       ElevatedButton(
                         onPressed: () {
-                          // _performLogin();
+                          _performLogin();
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
@@ -128,5 +130,42 @@ bool _showPassword = false;
         ),
       ),
     );
+  }
+  void _performLogin() async {
+   try {
+      final String email = _emailController.text.trim();
+      final String password = _passwordController.text.trim();
+
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      // Navigate to the home page upon successful authentication
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const HomePage(),
+        ),
+      );
+    } catch (e) {
+      // Show an error dialog for authentication failure
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Authentication Failed'),
+          content: Text(e.toString()),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+    }
+    
   }
 }

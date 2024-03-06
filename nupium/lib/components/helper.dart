@@ -27,12 +27,15 @@ class Helper {
       child: Column(
         children: [
           Card(
-            surfaceTintColor: Colors.white,
-            elevation: 0,
+            surfaceTintColor: const Color.fromARGB(255, 171, 185, 255),
+            elevation: 2,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(title, style: const TextStyle(fontSize: 25)),
+                Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: Text(title, style: const TextStyle(fontSize: 22)),
+                ),
                 SizedBox(
                   height: 60,
                   child: Image.asset("assets/smallarrow1.png"),
@@ -40,7 +43,7 @@ class Helper {
               ],
             ),
           ),
-          Image.asset("assets/line4.png"),
+          // Image.asset("assets/line4.png"),
         ],
       ),
     );
